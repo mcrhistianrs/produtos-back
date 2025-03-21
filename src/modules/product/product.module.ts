@@ -4,6 +4,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CreateProductUseCase } from './app/use-cases/create-product-use-case';
 import { FindAllProductUseCase } from './app/use-cases/find-all-product-use-case';
+import { UpdateProductUseCase } from './app/use-cases/update-product-use-case';
 import { ProductMongoDAO } from './infra/database/mongo/dao/product-mongo-dao';
 import {
   ProductMongoModel,
@@ -33,6 +34,7 @@ import { ProductController } from './product.controller';
     },
     CreateProductUseCase,
     FindAllProductUseCase,
+    UpdateProductUseCase,
   ],
   controllers: [ProductController],
   exports: [CreateProductUseCase],
