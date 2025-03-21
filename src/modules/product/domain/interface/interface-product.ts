@@ -15,7 +15,10 @@ interface OrderFilter {
 
 interface IProductDAO {
   create(input: Product): Promise<ProductMongoDocument>;
-  findAll(): Promise<ProductMongoDocument[]>;
+  findAll(
+    filter?: FindAllFilter,
+    order?: OrderFilter,
+  ): Promise<ProductMongoDocument[]>;
   findById(id: string): Promise<ProductMongoDocument>;
   update(input: UpdateProductDto): Promise<ProductMongoDocument>;
   delete(id: string): Promise<void>;

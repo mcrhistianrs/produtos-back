@@ -5,7 +5,11 @@ import { BadRequestException } from '@nestjs/common';
 import { UpdateProductDto } from 'src/modules/product/app/dto/update-product-dto';
 import { ProductMapper } from 'src/modules/product/app/mapper/product-mapper';
 import { Product } from 'src/modules/product/domain/entities/product';
-import { IProductDAO } from 'src/modules/product/domain/interface/interface-product';
+import {
+  FindAllFilter,
+  IProductDAO,
+  OrderFilter,
+} from 'src/modules/product/domain/interface/interface-product';
 import { ProductMongoDocument, ProductMongoModel } from '../schema/produto';
 
 class ProductMongoDAO implements IProductDAO {
@@ -33,9 +37,42 @@ class ProductMongoDAO implements IProductDAO {
       throw new BadRequestException('Error creating product');
     }
   }
-  async findAll(): Promise<ProductMongoDocument[]> {
+  async findAll(
+    filter?: FindAllFilter,
+    order?: OrderFilter,
+  ): Promise<ProductMongoDocument[]> {
     try {
-      const products = await this.productModel.find();
+      const query: any = {};
+
+      if (filter) {
+        if (filter.name) {
+          query.name = { $regex: filter.name, $options: 'i' };
+        }
+
+        if (filter.priceFrom || filter.priceTo) {
+          query.price = {};
+
+          if (filter.priceFrom) {
+            query.price.$gte = filter.priceFrom;
+          }
+
+          if (filter.priceTo) {
+            query.price.$lte = filter.priceTo;
+          }
+        }
+      }
+
+      let findQuery = this.productModel.find(query);
+
+      if (order) {
+        if (order.field === 'name') {
+          findQuery = findQuery.collation({ locale: 'en', strength: 2 });
+        }
+        const sortDirection = order.order === 'asc' ? 1 : -1;
+        findQuery = findQuery.sort({ [order.field]: sortDirection });
+      }
+
+      const products = await findQuery;
       return products;
     } catch {
       throw new BadRequestException('Error finding products');
