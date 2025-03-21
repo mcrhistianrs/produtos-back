@@ -1,0 +1,107 @@
+import { Test, TestingModule } from '@nestjs/testing';
+import { Types } from 'mongoose';
+import { CategoryEnum, Product } from '../../domain/entities/product';
+import { IProductDAO } from '../../domain/interface/interface-product';
+import { CreateProductDto } from '../dto/create-product-dto';
+import { ProductMapper } from '../mapper/product-mapper';
+import { CreateProductUseCase } from './create-product-use-case';
+
+describe('CreateProductUseCase', () => {
+  let sut: CreateProductUseCase;
+  let productDAO: IProductDAO;
+
+  const mockProductDTO: CreateProductDto = {
+    name: 'Test Product',
+    category: CategoryEnum.SNACK,
+    price: 299,
+    description: 'Test description',
+    imageUrl: 'https://example.com/image.jpg',
+  };
+
+  const mockProduct = Product.create({
+    name: 'Test Product',
+    category: CategoryEnum.SNACK,
+    price: 299,
+    description: 'Test description',
+    imageUrl: 'https://example.com/image.jpg',
+  });
+
+  const mockProductDocument = {
+    _id: new Types.ObjectId(),
+    name: 'Test Product',
+    category: CategoryEnum.SNACK,
+    price: 299,
+    description: 'Test description',
+    imageUrl: 'https://example.com/image.jpg',
+  };
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        CreateProductUseCase,
+        {
+          provide: 'ProductDAO',
+          useValue: {
+            create: jest.fn().mockResolvedValue(mockProductDocument),
+          },
+        },
+      ],
+    }).compile();
+
+    sut = module.get<CreateProductUseCase>(CreateProductUseCase);
+    productDAO = module.get<IProductDAO>('ProductDAO');
+  });
+
+  it('should be defined', () => {
+    expect(sut).toBeDefined();
+  });
+
+  describe('execute', () => {
+    it('should create a product and return product DTO', async () => {
+      jest.spyOn(Product, 'create').mockReturnValue(mockProduct);
+      jest.spyOn(ProductMapper, 'toDomain').mockReturnValue(mockProduct);
+      jest.spyOn(ProductMapper, 'toOutput').mockReturnValue({
+        id: mockProduct.id,
+        name: mockProduct.name,
+        category: mockProduct.category,
+        price: mockProduct.price,
+        description: mockProduct.description,
+        imageUrl: mockProduct.imageUrl,
+      });
+
+      const result = await sut.execute(mockProductDTO);
+
+      expect(Product.create).toHaveBeenCalledWith({
+        name: mockProductDTO.name,
+        category: mockProductDTO.category,
+        price: mockProductDTO.price,
+        description: mockProductDTO.description,
+        imageUrl: mockProductDTO.imageUrl,
+      });
+
+      expect(productDAO.create).toHaveBeenCalledWith(mockProduct);
+      expect(ProductMapper.toDomain).toHaveBeenCalledWith(mockProductDocument);
+      expect(ProductMapper.toOutput).toHaveBeenCalled();
+
+      expect(result).toEqual({
+        id: mockProduct.id,
+        name: mockProduct.name,
+        category: mockProduct.category,
+        price: mockProduct.price,
+        description: mockProduct.description,
+        imageUrl: mockProduct.imageUrl,
+      });
+    });
+
+    it('should throw an error if product creation fails', async () => {
+      jest.spyOn(Product, 'create').mockReturnValue(mockProduct);
+      jest
+        .spyOn(productDAO, 'create')
+        .mockRejectedValue(new Error('Database error'));
+
+      await expect(sut.execute(mockProductDTO)).rejects.toThrow(
+        'Database error',
+      );
+    });
+  });
+});
