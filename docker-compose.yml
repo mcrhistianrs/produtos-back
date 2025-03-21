@@ -1,0 +1,32 @@
+services:
+  produto-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    env_file:
+      - .env.development
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - .:/app
+    networks:
+      - app-network
+  produto-database:
+    image: mongo:6.0
+    ports:
+      - '27017:27017'
+    environment:
+      MONGO_INITDB_DATABASE: productdb
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - app-network
+
+volumes:
+  mongo-data:
+
+networks:
+  app-network:
+    driver: bridge
