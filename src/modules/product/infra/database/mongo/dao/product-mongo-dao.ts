@@ -21,7 +21,8 @@ class ProductMongoDAO implements IProductDAO {
     try {
       const productData = ProductMapper.toDatabase(input);
 
-      const { name, category, price, description, imageUrl } = productData;
+      const { name, category, price, description, imageUrl, quantityInStock } =
+        productData;
 
       const newProduct = new this.productModel({
         name,
@@ -29,6 +30,7 @@ class ProductMongoDAO implements IProductDAO {
         price,
         description,
         imageUrl,
+        quantityInStock,
       });
 
       const productCreated = await newProduct.save();

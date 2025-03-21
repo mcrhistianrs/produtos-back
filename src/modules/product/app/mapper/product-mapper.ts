@@ -12,6 +12,7 @@ class ProductMapper {
       price: product.price,
       description: product.description,
       imageUrl: product.imageUrl,
+      quantityInStock: product.quantityInStock,
     };
   }
 
@@ -23,6 +24,7 @@ class ProductMapper {
       price: product.price,
       description: product.description,
       imageUrl: product.imageUrl,
+      quantityInStock: product.quantityInStock,
     });
   }
 
@@ -37,6 +39,7 @@ class ProductMapper {
       price: product.price,
       description: product.description,
       imageUrl: product.imageUrl,
+      quantityInStock: product.quantityInStock,
     };
   }
 }

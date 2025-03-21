@@ -20,6 +20,7 @@ class CreateProductUseCase {
       price: input.price,
       description: input.description,
       imageUrl: input.imageUrl,
+      quantityInStock: input.quantityInStock,
     });
     const productDatabase = await this.productDAO.create(product);
     const productDomain = ProductMapper.toDomain(productDatabase);

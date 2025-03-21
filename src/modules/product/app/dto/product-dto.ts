@@ -7,6 +7,7 @@ class ProductDto {
   price: number;
   description: string;
   imageUrl: string;
+  quantityInStock: number;
 }
 
 export { ProductDto };

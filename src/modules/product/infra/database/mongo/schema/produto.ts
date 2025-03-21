@@ -22,6 +22,9 @@ class ProductMongoModel {
 
   @Prop({ required: true, type: String })
   imageUrl: string;
+
+  @Prop({ required: true, type: Number })
+  quantityInStock: number;
 }
 
 const ProductMongoSchema = SchemaFactory.createForClass(ProductMongoModel);

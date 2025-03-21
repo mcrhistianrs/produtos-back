@@ -18,6 +18,7 @@ describe('FindAllProductUseCase', () => {
       price: 299,
       description: 'Description 1',
       imageUrl: 'https://example.com/image1.jpg',
+      quantityInStock: 10,
     },
     {
       _id: new Types.ObjectId(),
@@ -26,6 +27,7 @@ describe('FindAllProductUseCase', () => {
       price: 399,
       description: 'Description 2',
       imageUrl: 'https://example.com/image2.jpg',
+      quantityInStock: 10,
     },
   ];
 
@@ -36,6 +38,7 @@ describe('FindAllProductUseCase', () => {
       price: 299,
       description: 'Description 1',
       imageUrl: 'https://example.com/image1.jpg',
+      quantityInStock: 10,
     }),
     Product.create({
       name: 'Product 2',
@@ -43,6 +46,7 @@ describe('FindAllProductUseCase', () => {
       price: 399,
       description: 'Description 2',
       imageUrl: 'https://example.com/image2.jpg',
+      quantityInStock: 10,
     }),
   ];
 

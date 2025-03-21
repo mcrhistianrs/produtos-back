@@ -16,6 +16,7 @@ describe('CreateProductUseCase', () => {
     price: 299,
     description: 'Test description',
     imageUrl: 'https://example.com/image.jpg',
+    quantityInStock: 10,
   };
 
   const mockProduct = Product.create({
@@ -24,6 +25,7 @@ describe('CreateProductUseCase', () => {
     price: 299,
     description: 'Test description',
     imageUrl: 'https://example.com/image.jpg',
+    quantityInStock: 10,
   });
 
   const mockProductDocument = {
@@ -33,6 +35,7 @@ describe('CreateProductUseCase', () => {
     price: 299,
     description: 'Test description',
     imageUrl: 'https://example.com/image.jpg',
+    quantityInStock: 10,
   };
 
   beforeEach(async () => {
@@ -57,7 +60,7 @@ describe('CreateProductUseCase', () => {
   });
 
   describe('execute', () => {
-    it('should create a product and return product DTO', async () => {
+    it('should create a product and return product', async () => {
       jest.spyOn(Product, 'create').mockReturnValue(mockProduct);
       jest.spyOn(ProductMapper, 'toDomain').mockReturnValue(mockProduct);
       jest.spyOn(ProductMapper, 'toOutput').mockReturnValue({
@@ -67,6 +70,7 @@ describe('CreateProductUseCase', () => {
         price: mockProduct.price,
         description: mockProduct.description,
         imageUrl: mockProduct.imageUrl,
+        quantityInStock: mockProduct.quantityInStock,
       });
 
       const result = await sut.execute(mockProductDTO);
@@ -77,6 +81,7 @@ describe('CreateProductUseCase', () => {
         price: mockProductDTO.price,
         description: mockProductDTO.description,
         imageUrl: mockProductDTO.imageUrl,
+        quantityInStock: mockProductDTO.quantityInStock,
       });
 
       expect(productDAO.create).toHaveBeenCalledWith(mockProduct);
@@ -90,6 +95,7 @@ describe('CreateProductUseCase', () => {
         price: mockProduct.price,
         description: mockProduct.description,
         imageUrl: mockProduct.imageUrl,
+        quantityInStock: mockProduct.quantityInStock,
       });
     });
 

@@ -13,6 +13,7 @@ interface ProductFields {
   price: number;
   description: string;
   imageUrl: string;
+  quantityInStock: number;
 }
 
 class Product {
@@ -67,6 +68,13 @@ class Product {
   }
   set imageUrl(imageUrl: string) {
     this.fields.imageUrl = imageUrl;
+  }
+
+  get quantityInStock(): number {
+    return this.fields.quantityInStock;
+  }
+  set quantityInStock(quantityInStock: number) {
+    this.fields.quantityInStock = quantityInStock;
   }
 }
 
