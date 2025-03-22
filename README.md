@@ -24,7 +24,7 @@
 
 ## Screenshots
 
-Create user
+Create a new user
 
 ![Create user](https://i.postimg.cc/zXp36v4w/create-user.png)
 
