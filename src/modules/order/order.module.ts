@@ -13,6 +13,7 @@ import {
 } from './infra/database/mongo/schema/order';
 import { OrderController } from './order.controller';
 import { CreateOrderUseCase } from './use-cases/create-order-use-case';
+import { UpdateOrderUseCase } from './use-cases/update-order-use-case';
 
 @Module({
   imports: [
@@ -36,8 +37,9 @@ import { CreateOrderUseCase } from './use-cases/create-order-use-case';
       useClass: OrderMongoRepository,
     },
     CreateOrderUseCase,
+    UpdateOrderUseCase,
   ],
   controllers: [OrderController],
-  exports: [CreateOrderUseCase],
+  exports: [CreateOrderUseCase, UpdateOrderUseCase],
 })
 export class OrderModule {}

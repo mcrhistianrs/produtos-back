@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
 import { StatusEnum } from 'src/modules/order/app/enums/status-enum';
 import { OrderMapper } from 'src/modules/order/app/mapper/order-mapper';
@@ -94,7 +94,6 @@ class OrderMongoRepository implements IOrderRepository {
       if (!order) {
         throw new NotFoundException(`Order with ID ${id} not found`);
       }
-
       const updatedOrderData = OrderMapper.toDatabase(orderData);
       const updatedOrder = await this.orderModel
         .findByIdAndUpdate(id, updatedOrderData, { new: true })
@@ -138,45 +137,43 @@ class OrderMongoRepository implements IOrderRepository {
         status === StatusEnum.CONCLUDED &&
         order.status !== StatusEnum.CONCLUDED
       ) {
-        const session = await this.orderModel.db.startSession();
+        for (const item of order.items) {
+          const productIdStr =
+            item.productId instanceof Types.ObjectId
+              ? item.productId.toString()
+              : item.productId;
 
-        try {
-          session.startTransaction();
+          const product = await this.productModel.findById(productIdStr);
 
-          for (const item of order.items) {
-            const product = await this.productModel.findById(item.productId);
-
-            if (!product) {
-              throw new NotFoundException(
-                `Product with ID ${item.productId} not found`,
-              );
-            }
-
-            if (product.quantityInStock < item.quantity) {
-              throw new BadRequestException(
-                `Cannot complete order: Insufficient stock for product ${product.name}.`,
-              );
-            }
-
-            await this.productModel.findByIdAndUpdate(
-              item.productId,
-              { $inc: { quantityInStock: -item.quantity } },
-              { session },
+          if (!product) {
+            throw new NotFoundException(
+              `Product with ID ${productIdStr} not found`,
             );
           }
 
-          order.status = status;
-          await order.save({ session });
-
-          await session.commitTransaction();
-        } catch (error) {
-          await session.abortTransaction();
-          throw error;
-        } finally {
-          session.endSession();
+          if (product.quantityInStock < item.quantity) {
+            throw new BadRequestException(
+              `Cannot complete order: Insufficient stock for product ${product.name}.`,
+            );
+          }
         }
 
-        return OrderMapper.toDomain(order);
+        for (const item of order.items) {
+          const productIdStr =
+            item.productId instanceof Types.ObjectId
+              ? item.productId.toString()
+              : item.productId;
+
+          await this.productModel.findByIdAndUpdate(
+            productIdStr,
+            { $inc: { quantityInStock: -item.quantity } },
+            { new: true },
+          );
+        }
+
+        order.status = status;
+        const savedOrder = await order.save();
+        return OrderMapper.toDomain(savedOrder);
       }
 
       order.status = status;

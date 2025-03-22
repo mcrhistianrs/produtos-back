@@ -37,16 +37,32 @@ class OrderMapper {
   static toDatabase(order: Order): OrderMongoDocument {
     const id = order.id ? new Types.ObjectId(order.id) : new Types.ObjectId();
 
-    return {
-      _id: id,
-      items: order.items.map(
-        (item) =>
-          ({
-            productId: new Types.ObjectId(item.productId),
+    const validItems = (order.items || []).filter(
+      (item) =>
+        item &&
+        item.productId &&
+        typeof item.productId === 'string' &&
+        item.productId.match(/^[0-9a-fA-F]{24}$/),
+    );
+
+    const items = validItems
+      .map((item) => {
+        try {
+          const productId = new Types.ObjectId(item.productId);
+          return {
+            productId,
             quantity: item.quantity,
             price: item.price,
-          }) as OrderItemModel,
-      ),
+          } as OrderItemModel;
+        } catch {
+          return null;
+        }
+      })
+      .filter(Boolean);
+
+    return {
+      _id: id,
+      items,
       total: order.total,
       status: order.status,
       createdAt: order.createdAt,
