@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Types } from 'mongoose';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { CategoryEnum, Product } from '../../domain/entities/product';
 import { IProductDAO } from '../../domain/interface/interface-product';
 import { FindAllDto } from '../dto/find-all-dto';
 import { ProductMapper } from '../mapper/product-mapper';
 import { FindAllProductUseCase } from './find-all-product-use-case';
-
 describe('FindAllProductUseCase', () => {
   let sut: FindAllProductUseCase;
   let productDAO: IProductDAO;
@@ -57,7 +57,7 @@ describe('FindAllProductUseCase', () => {
         {
           provide: 'ProductDAO',
           useValue: {
-            findAll: jest.fn().mockResolvedValue(mockProducts),
+            findAll: vi.fn().mockResolvedValue(mockProducts),
           },
         },
       ],
@@ -75,8 +75,7 @@ describe('FindAllProductUseCase', () => {
     it('should return all products without filters', async () => {
       const input = new FindAllDto();
 
-      jest
-        .spyOn(ProductMapper, 'toDomain')
+      vi.spyOn(ProductMapper, 'toDomain')
         .mockReturnValueOnce(mockProductDomain[0])
         .mockReturnValueOnce(mockProductDomain[1]);
 
@@ -91,8 +90,7 @@ describe('FindAllProductUseCase', () => {
       const input = new FindAllDto();
       input.name = 'Product';
 
-      jest
-        .spyOn(ProductMapper, 'toDomain')
+      vi.spyOn(ProductMapper, 'toDomain')
         .mockReturnValueOnce(mockProductDomain[0])
         .mockReturnValueOnce(mockProductDomain[1]);
 
@@ -110,8 +108,7 @@ describe('FindAllProductUseCase', () => {
       input.priceFrom = 200;
       input.priceTo = 400;
 
-      jest
-        .spyOn(ProductMapper, 'toDomain')
+      vi.spyOn(ProductMapper, 'toDomain')
         .mockReturnValueOnce(mockProductDomain[0])
         .mockReturnValueOnce(mockProductDomain[1]);
 
@@ -129,8 +126,7 @@ describe('FindAllProductUseCase', () => {
       input.orderField = 'name';
       input.orderDirection = 'asc';
 
-      jest
-        .spyOn(ProductMapper, 'toDomain')
+      vi.spyOn(ProductMapper, 'toDomain')
         .mockReturnValueOnce(mockProductDomain[0])
         .mockReturnValueOnce(mockProductDomain[1]);
 
@@ -147,8 +143,7 @@ describe('FindAllProductUseCase', () => {
       const input = new FindAllDto();
       input.orderField = 'price';
 
-      jest
-        .spyOn(ProductMapper, 'toDomain')
+      vi.spyOn(ProductMapper, 'toDomain')
         .mockReturnValueOnce(mockProductDomain[0])
         .mockReturnValueOnce(mockProductDomain[1]);
 
@@ -168,8 +163,7 @@ describe('FindAllProductUseCase', () => {
       input.orderField = 'price';
       input.orderDirection = 'desc';
 
-      jest
-        .spyOn(ProductMapper, 'toDomain')
+      vi.spyOn(ProductMapper, 'toDomain')
         .mockReturnValueOnce(mockProductDomain[0])
         .mockReturnValueOnce(mockProductDomain[1]);
 
@@ -183,9 +177,9 @@ describe('FindAllProductUseCase', () => {
     });
 
     it('should throw an error if fetching products fails', async () => {
-      jest
-        .spyOn(productDAO, 'findAll')
-        .mockRejectedValue(new Error('Database error'));
+      vi.spyOn(productDAO, 'findAll').mockRejectedValue(
+        new Error('Database error'),
+      );
 
       await expect(sut.execute(new FindAllDto())).rejects.toThrow(
         'Database error',

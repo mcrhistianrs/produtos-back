@@ -45,7 +45,7 @@ describe('CreateProductUseCase', () => {
         {
           provide: 'ProductDAO',
           useValue: {
-            create: jest.fn().mockResolvedValue(mockProductDocument),
+            create: vi.fn().mockResolvedValue(mockProductDocument),
           },
         },
       ],
@@ -61,9 +61,9 @@ describe('CreateProductUseCase', () => {
 
   describe('execute', () => {
     it('should create a product and return product', async () => {
-      jest.spyOn(Product, 'create').mockReturnValue(mockProduct);
-      jest.spyOn(ProductMapper, 'toDomain').mockReturnValue(mockProduct);
-      jest.spyOn(ProductMapper, 'toOutput').mockReturnValue({
+      vi.spyOn(Product, 'create').mockReturnValue(mockProduct);
+      vi.spyOn(ProductMapper, 'toDomain').mockReturnValue(mockProduct);
+      vi.spyOn(ProductMapper, 'toOutput').mockReturnValue({
         id: mockProduct.id,
         name: mockProduct.name,
         category: mockProduct.category,
@@ -100,10 +100,10 @@ describe('CreateProductUseCase', () => {
     });
 
     it('should throw an error if product creation fails', async () => {
-      jest.spyOn(Product, 'create').mockReturnValue(mockProduct);
-      jest
-        .spyOn(productDAO, 'create')
-        .mockRejectedValue(new Error('Database error'));
+      vi.spyOn(Product, 'create').mockReturnValue(mockProduct);
+      vi.spyOn(productDAO, 'create').mockRejectedValue(
+        new Error('Database error'),
+      );
 
       await expect(sut.execute(mockProductDTO)).rejects.toThrow(
         'Database error',
