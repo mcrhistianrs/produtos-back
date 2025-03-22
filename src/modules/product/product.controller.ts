@@ -14,6 +14,11 @@ import { FindByIdProductDto } from './app/dto/find-by-id-product-dto';
 import { ProductDto } from './app/dto/product-dto';
 import { UpdateProductDto } from './app/dto/update-product-dto';
 import { ProductMapper } from './app/mapper/product-mapper';
+import { SwaggerCreateProduct } from './app/swagger/swagger-create-product';
+import { SwaggerDeleteProduct } from './app/swagger/swagger-delete-product';
+import { SwaggerFindAllProducts } from './app/swagger/swagger-find-all-products';
+import { SwaggerFindProductById } from './app/swagger/swagger-find-product-by-id';
+import { SwaggerUpdateProduct } from './app/swagger/swagger-update-product';
 import { CreateProductUseCase } from './app/use-cases/create-product-use-case';
 import { DeleteProductUseCase } from './app/use-cases/delete-product-use-case';
 import { FindAllProductUseCase } from './app/use-cases/find-all-product-use-case';
@@ -31,17 +36,20 @@ class ProductController {
   ) {}
 
   @Post()
+  @SwaggerCreateProduct()
   async create(@Body() input: CreateProductDto): Promise<ProductDto> {
     return this.createProductUseCase.execute(input);
   }
 
   @Get()
+  @SwaggerFindAllProducts()
   async findAll(@Query() input: FindAllDto): Promise<ProductDto[]> {
     const products = await this.findAllProductUseCase.execute(input);
     return products.map((product) => ProductMapper.toOutput(product));
   }
 
   @Get(':id')
+  @SwaggerFindProductById()
   async findById(@Param('id') id: string): Promise<ProductDto> {
     const input = new FindByIdProductDto();
     input.id = id;
@@ -49,6 +57,7 @@ class ProductController {
   }
 
   @Patch(':id')
+  @SwaggerUpdateProduct()
   async update(
     @Param('id') id: string,
     @Body() input: UpdateProductDto,
@@ -58,6 +67,7 @@ class ProductController {
   }
 
   @Delete(':id')
+  @SwaggerDeleteProduct()
   async delete(@Param('id') id: string): Promise<void> {
     await this.deleteProductUseCase.execute(id);
   }
