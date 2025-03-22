@@ -54,17 +54,31 @@ _Error message shown when trying to conclude an order with insufficient product 
 $ npm install
 ```
 
-## Compile and run the project
+## Run the project
 
 ```bash
 # development
-$ npm run start
+$ docker-compose up -d
 
-# watch mode
-$ npm run start:dev
+```
 
-# production mode
-$ npm run start:prod
+The api run at http://localhost:3000
+
+## Example of curl to create a product
+
+```bash
+$ curl --request POST \
+  --url http://localhost:3000/products \
+  --header 'Content-Type: application/json' \
+  --header 'User-Agent: insomnium/0.2.3' \
+  --data '{
+	"name": "pastelina",
+	"category": "snack",
+	"price": 299,
+	"description": "pouco bom",
+	"imageUrl": "https://example.com/images/potato-chips.jpg",
+	"quantityInStock":10
+}'
 ```
 
 ## Run tests
