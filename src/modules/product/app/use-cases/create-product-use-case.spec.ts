@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Types } from 'mongoose';
+import { vi } from 'vitest';
 import { CategoryEnum, Product } from '../../domain/entities/product';
 import { IProductDAO } from '../../domain/interface/interface-product';
 import { CreateProductDto } from '../dto/create-product-dto';

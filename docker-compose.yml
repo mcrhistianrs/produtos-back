@@ -5,6 +5,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - '3000:3000'
+      - '9229:9229'
     env_file:
       - .env.development
     environment:
@@ -13,6 +14,7 @@ services:
       - .:/app
     networks:
       - app-network
+    command: npm run start:debug
   produto-database:
     image: mongo:6.0
     ports:
